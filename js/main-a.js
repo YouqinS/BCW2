@@ -1,18 +1,15 @@
-// Create XMLHttpRequest object. Name it xhr.
-var xhr = new XMLHttpRequest();
+'use strict';
+// Create function 'loadHTML' which
+// adds the loaded HTML content to element defined by query
+const loadHTML = (query, url) => {
+  const element = document.querySelector(query);
+  fetch(url)
+  .then((response) => {
+    return response.text();
+  })
+  .then((text) => {
+    element.innerHTML = text;
+  });
+};
 
-// Create function 'showImages' which
-var showImages = function() {
-    // checks that loaded content is ready (readyState and status) and
-    if (this.readyState == 4 && this.status == 200) {
-        // then adds the loaded HTML content to <ul> element.
-        document.querySelector('ul').innerHTML = this.responseText;
-    }
-}
-
-// Open XMLHttpRequest connection to load images.html, use get method.
-xhr.open("GET", "images.html", true);
-// When ready state changes, call showImages function.
-xhr.onreadystatechange = showImages;
-// Send XMLHttpRequest.
-xhr.send();
+loadHTML('ul', 'images.html');

@@ -1,57 +1,62 @@
-// Create XMLHttpRequest object. Name it xhr.
-var xhr = new XMLHttpRequest();
+'use strict';
 // Create function 'showImages' which
-var showImages = function() {
-    // checks that loaded content is ready (readyState and status) and
-    if (this.readyState == 4 && this.status == 200) {
-        // then converts the JSON loaded from the server to JavaScript object.
-        var arr = JSON.parse(this.responseText);
-        // Create a loop which builds the following HTML from every image:
-        for (var i = 0; i < arr.length; i++) {
-            /*
-            <li>
-                <figure>
-                    <a href="img/original/filename.jpg"><img src="img/thumbs/filename.jpg"></a>
-                    <figcaption>
-                        <h3>Title</h3>
-                    </figcaption>
-                </figure>
-            </li>
-            */
-            // Make the HTML elements by using createElement-method and
-            // add the attributes by using setAttribute method or element.attribute syntax.
-            // Nest the elements with appendChild-method.
-            var title = document.createTextNode(arr[i].mediaTitle);
-            var h3 = document.createElement('h3');
-            h3.appendChild(title);
+// loads images.json which has links to images as an array.
 
-            var figcaption = document.createElement('figcaption');
-            figcaption.appendChild(h3);
+// create a loop which builds the following HTML from every image in the array: 
+/*
+<li>
+    <figure>
+        <a href="img/original/filename.jpg"><img src="img/thumbs/filename.jpg"></a>
+        <figcaption>
+            <h3>Title</h3>
+        </figcaption>
+    </figure>
+</li>
+*/
+// Make the above HTML by using DOM methods.
+// Create elements with createElement()
+// Add attributes with setAttribute()
+// Add elements with appendChild
+// Add text with createTextNode
+// When the above HTML is ready append it to the <ul> element
+const showImages = () => {
+  const ul = document.querySelector('ul');
 
-            var img = document.createElement('img');
-            img.setAttribute('src', 'img/thumbs/' + arr[i].mediaThumb)
-            var a = document.createElement('a');
-            a.setAttribute('href', 'img/original/' + arr[i].mediaUrl);
-            a.appendChild(img);
+  fetch('images.json').then((response) => {
+    return response.json();
+  }).then((json) => {
+    json.forEach((image) => {
+      // put code here
+      // create elements
+      const h3 = document.createElement('h3');
+      const figcaption = document.createElement('figcaption');
+      const img = document.createElement('img');
+      const a = document.createElement('a');
+      const figure = document.createElement('figure');
+      const li = document.createElement('li');
 
-            var figure = document.createElement('figure');
-            figure.appendChild(a);
-            figure.appendChild(figcaption);
+      // add text content
+      const text = document.createTextNode(image.mediaTitle);
+      h3.appendChild(text);
+      // or
+      // h3.innerHTML = image.mediaTitle;
 
-            var li = document.createElement('li');
-            li.appendChild(figure);
+      // add attributes
+      img.setAttribute('src', 'img/thumbs/' + image.mediaUrl);
+      a.setAttribute('href', 'img/original/' + image.mediaUrl);
 
-            // Finally place the elements into <ul> element to print them to the HTML page
-            var ul = document.querySelector('ul');
-            ul.appendChild(li);
-        } // end for
-    } // end if
-    // Function ends.
-}
+      // nest elements
+      figcaption.appendChild(h3);
+      a.appendChild(img);
+      figure.appendChild(a);
+      figure.appendChild(figcaption);
+      li.appendChild(figure);
 
-// Open XMLHttpRequest connection to load images.html, use get method.
-xhr.open("GET", "images.json", true);
-// When ready state changes, call showImages function.
-xhr.onreadystatechange = showImages;
-// Send XMLHttpRequest.
-xhr.send();
+      // insert new elements to page
+      ul.appendChild(li);
+
+    });
+  });
+};
+
+showImages();

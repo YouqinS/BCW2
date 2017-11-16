@@ -1,37 +1,39 @@
-// Create XMLHttpRequest object. Name it xhr.
-var xhr = new XMLHttpRequest();
-
+'use strict';
 // Create function 'showImages' which
-var showImages = function() {
-    // checks that loaded content is ready (readyState and status) and
-    if (this.readyState == 4 && this.status == 200) {
-        // then converts the JSON loaded from the server to JavaScript object.
-        var arr = JSON.parse(this.responseText);
-        // Inside the fuction create an empty string 'output' and
-        var output = '';
-        // create a loop which builds HTML from every image
-        // Filename.jpg and Title values are fetched from the JSON object.
-        for (var i = 0; i < arr.length; i++) {
-            // Add the  HTML to the 'output' variable.
-            output += '<li>' +
-                '<figure>' +
-                '<a href="img/original/' + arr[i].mediaUrl + '">' +
-                '<img src="img/thumbs/' + arr[i].mediaThumb + '"></a>' +
-                '<figcaption>' +
-                '<h3>' + arr[i].mediaTitle + '</h3>' +
-                '</figcaption>' +
-                '</figure>' +
-                '</li>';
-        }
-        // After the loop print the HTML (output) into <ul> element.
-        document.querySelector('ul').innerHTML = output;
-    }
-    // Function ends.
-}
+// loads images.json which has links to images as an array.
 
-// Open XMLHttpRequest connection to load images.html, use get method.
-xhr.open("GET", "images.json", true);
-// When ready state changes, call showImages function.
-xhr.onreadystatechange = showImages;
-// Send XMLHttpRequest.
-xhr.send();
+// create a loop which builds the following HTML from every image in the array: 
+/*
+ <li>
+ <figure>
+ <a href="img/original/filename.jpg"><img src="img/thumbs/filename.jpg"></a>
+ <figcaption>
+ <h3>Title</h3>
+ </figcaption>
+ </figure>
+ </li>
+ */
+// After the loop print the HTML into <ul> element using innerHTML.
+const showImages = () => {
+  const ul = document.querySelector('ul');
+
+  fetch('images.json').then((response) => {
+    return response.json();
+  }).then((json) => {
+    let html = '';
+    json.forEach((image) => {
+      html +=
+          `<li>
+          <figure>
+            <a href="img/original/${image.mediaUrl}"><img src="img/thumbs/${image.mediaThumb}"></a>
+            <figcaption>
+                <h3>${image.mediaTitle}</h3>
+            </figcaption>
+          </figure>
+        </li>`;
+    });
+    ul.innerHTML = html;
+  });
+};
+
+showImages();
